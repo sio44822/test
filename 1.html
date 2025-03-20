@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4">
+    tailwind.config = {
+      theme: {
+        extends: {
+          colors: {}
+        }
+      }
+    }
+  </script>
+  <title>Document</title>
+  <script>
+
+  </script>
+  <style>
+    
+
+  </style>
+  <script>
+    let studentname = [
+      [
+        "K1C ",
+        "K1D ",
+        "K1A ",
+        "K1B ",
+        "K2C ",
+        "K2D ",
+        "K2A ",
+        "K2B ",
+        "K3A",
+        "K2B",
+        "K3C ",
+        "K3D ",
+        "K3A ",
+        "K3E"
+      ],
+      [
+        "朱雅旻",
+        "沈詩辰",
+        "吳芷晴",
+        "吳至芊",
+        "李筱佟",
+        "丘珈霖",
+        "王奕霏",
+        "吳昕然",
+        "黃妤浠   ",
+        "譚銘傑",
+        "林汶靜 ",
+        "甘悅琪",
+        "徐鎧澄",
+        "袁柏霖"
+      ],
+      [
+        "倪天恩",
+        "林禧瑜",
+        "周凱澄",
+        "施懿蕾",
+        "林靄瑭",
+        "胡澄澄",
+        "王奕霖",
+        "李曉曈",
+        "邱浩軒   ",
+        "K2C",
+        "郭宣誼",
+        "梁幸妍  N",
+        "許逸灝",
+        "趙梓皓   "
+      ],
+      [
+        "許芷諾",
+        "張諾妍",
+        "張芷瑜",
+        "鄧子欣",
+        "柯熙琳",
+        "高思妤",
+        "何苡欣",
+        "林沐澄",
+        "",
+        "曾詩琳",
+        "陳允曦 ",
+        "梁梓猷",
+        "2",
+        "葉子樂  N"
+      ],
+      [
+        "潘思晴",
+        "潘子語",
+        "梁樂晴",
+        "盧昕晴",
+        "張靖悠",
+        "梁樂思",
+        "翁子淇",
+        "梁凱蕎",
+        "K3B",
+        "黃柏喬",
+        "黃子蕎   ",
+        "鍾思蔚   ",
+        "",
+        "梁倬瑜"
+      ],
+      [
+        "蔣羽桐",
+        "潘妤晴",
+        "王愷陽",
+        "庄一諾",
+        "陳熙翹",
+        "莊子瑤",
+        "林恩浩",
+        "許羨蕾",
+        "何栩淳 ",
+        "",
+        "楊穎欣   ",
+        "王晟霖",
+        "",
+        "4"
+      ],
+      [
+        "王進韜",
+        "蘇靖喬",
+        "林上竣",
+        "何曦淳",
+        "鄧雅芮",
+        "溫語桐",
+        "夏梓誠",
+        "陳若樺",
+        "胡靖嵐",
+        "K2D",
+        "樊幸瑜  N",
+        "甘皓朗  N",
+        "K3B",
+        ""
+      ],
+      [
+        "司徒睿晞",
+        "王建皓",
+        "林奕燊",
+        "張灝軒",
+        "盧詩雅",
+        "朱峻賢",
+        "張翊延",
+        "劉沛琳",
+        "陳宜安  N",
+        "周禮翀",
+        "蔣芷欣",
+        "甘鎮麟   ",
+        "李芯穎",
+        "K2A"
+      ],
+      [
+        "庄彥軍",
+        "吳逸昀",
+        "陳彥安",
+        "黃日希",
+        "蘇凱瑜",
+        "招逸熙",
+        "黃籽謙",
+        "賴心妍",
+        "",
+        "區天皓",
+        "王梓溢  N",
+        "吳智恆 ",
+        "林    瀅",
+        "梁心柔"
+      ],
+      [
+        "冼汶柏",
+        "邱柏澔",
+        "黃恩泓",
+        "楊奕霆",
+        "邱淏渢",
+        "陳愷揚",
+        "譚景豪",
+        "戴子桐",
+        "K3C",
+        "陳心玥",
+        "吳俊熹",
+        "周卓宏",
+        "歐陽梓潼",
+        "陸思惠"
+      ],
+      [
+        "林伊悠",
+        "陳俊愷",
+        "蔡澄栩",
+        "趙宇軒",
+        "高浩宸",
+        "潘臻逸",
+        "9",
+        "王梓誠",
+        "胡銘傑",
+        "楊玥言",
+        "姜奕宇   ",
+        "高天耀",
+        "阮逸然",
+        ""
+      ],
+      [
+        "陸可宇",
+        "廖俊傑",
+        "10",
+        "劉睿祺",
+        "梁睿竣",
+        "蔡承順",
+        "",
+        "吳梓晞",
+        "王廷芝  ",
+        "K1A",
+        "梁圳成",
+        "陳梓航",
+        "周    愉",
+        "K2D"
+      ],
+      [
+        "麥顥藍",
+        "鄧一彥",
+        "",
+        "盧雲靠",
+        "楊子謙",
+        "楊紫晴",
+        "K3A",
+        "施懿誠",
+        "梁雨芊",
+        "徐芷瑩",
+        "梁洛鈞",
+        "11",
+        "洪梓豪",
+        "梁倬喬"
+      ],
+      [
+        "湯浚褀",
+        "鄭宇浩",
+        "K3A",
+        "謝紹歡",
+        "楊樂信",
+        "12",
+        "何卓芯   ",
+        "唐一鳴",
+        "鞏欣燃",
+        "溫沛妍",
+        "黃玄羽   ",
+        "",
+        "6",
+        ""
+      ],
+      [
+        "蔡瑋宸",
+        "鄭宇澤",
+        "林奕灝",
+        "盧彥霏",
+        "關卓軒",
+        "",
+        "吳映凡",
+        "陳頌軒",
+        "K3D",
+        "梁澤彥",
+        "談梓晞",
+        "K3A",
+        "",
+        ""
+      ],
+      [
+        "14",
+        "陳柯妍",
+        "",
+        "14",
+        "14",
+        "K3A",
+        "容卓軒   ",
+        "劉承穎",
+        "陳炫妤   ",
+        "羅安然",
+        "鄭子陽",
+        "胡尚昇",
+        "K3C",
+        ""
+      ],
+      [
+        "",
+        "15",
+        "K3D",
+        "K1C",
+        "",
+        "梁倬銘",
+        "張俊文",
+        "劉梓浚",
+        "K3E",
+        "K1B",
+        "霍    旭  N",
+        "",
+        "高祉朗",
+        ""
+      ],
+      [
+        "K3B",
+        "",
+        "吳浚彬 ",
+        "梁澤桸",
+        "K2B",
+        "",
+        "",
+        "蕭卓禮",
+        "吳宥熹",
+        "何裕軒",
+        "16",
+        "K1A",
+        "",
+        ""
+      ],
+      [
+        "朱令儀",
+        "K2A",
+        "陳梓曦",
+        "",
+        "洪銘宥",
+        "K3B",
+        "K3E",
+        "17",
+        "黃楸茹",
+        "湯宏奕",
+        "",
+        "郭俊亨",
+        "K3D",
+        ""
+      ],
+      [
+        "",
+        "蔡瀚棋",
+        "",
+        "K1D",
+        "K3E",
+        "戴梓軒 ",
+        "陳逸恆",
+        "",
+        "潘梓謙",
+        "鄧柏希",
+        "K2D",
+        "廖昊廷",
+        "黎泓熹",
+        ""
+      ],
+      [
+        "K3D",
+        "陳文軒",
+        "K3E",
+        "吳若浠",
+        "鄭欽勝  ",
+        "",
+        "禤慜漩  N",
+        "K1A",
+        "袁梓喬",
+        "K1C",
+        "吳浩然",
+        "",
+        "",
+        ""
+      ],
+      [
+        "陳皓信",
+        "",
+        "王鎧霖   ",
+        "",
+        "",
+        "K3D",
+        "",
+        "袁皓程",
+        "K2A",
+        "林恩妤",
+        "",
+        "K1B",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "古諾樂",
+        "K2C",
+        "K1D",
+        "葉心妤",
+        "",
+        "",
+        "柳紫盈",
+        "張城愷",
+        "K3E",
+        "陳傲泓",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "洪心滺",
+        "馬翊桓",
+        "馮梓翊",
+        "蔡靖敏   ",
+        "",
+        "K1D",
+        "洪梓喬",
+        "蔡秉宏",
+        "梁逸峰",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "蔡柏昇   ",
+        "",
+        "",
+        "洪銘浩",
+        "",
+        "龔浩蕣",
+        "陳泱璇",
+        "K1D",
+        "梁鉦琛",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "盧昕彤",
+        "",
+        "",
+        "",
+        "",
+        "李澔謙",
+        "黃思雅",
+        "周樂軒",
+        "黃子涵",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    ];
+
+    function transpose(matrix) {
+      return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+    }
+
+    // 測試陣列
+    const array = [[1, 2, 3], ['a', 'b', 'c'], [0, 9, 8]];
+
+    // 執行轉置
+    const rotatedArray = transpose(studentname);
+
+    console.log(rotatedArray);
+  </script>
+</head>
+
+<body>
+  <div class="mx-auto max-w-screen-lg ">
+    <div class="w-full border-1 border-purple-400 flex overflow-x-scroll ">
+      <div class="m-5 w-100 h-25 border-1 border-red-400 rounded-sm flex-shrink-0"></div>
+      <div class="m-5 w-100 h-25 border-1 border-red-400 rounded-sm flex-shrink-0"></div>
+      <div class="m-5 w-100 h-25 border-1 border-red-400 rounded-sm flex-shrink-0"></div>
+      <div class="m-5 w-100 h-25 border-1 border-red-400 rounded-sm flex-shrink-0"></div>
+      <div class="m-5 w-100 h-25 border-1 border-red-400 rounded-sm flex-shrink-0"></div>
+    </div>
+  </div>
+<!-- 
+  <div class="p-10">
+
+    <div class="mx-auto max-w-dvw  lg:max-w-3xl  lg:text-center py-5 ">
+      <p class="text-indigo-600 text-sm  ">Deploy faster</p>
+      <p class="text-gray-800 text-4xl max-w-xl mt-2 mb-5 lg:max-w-md lg:mx-auto lg:mt-2 lg:mb-8 lg:text-4xl">Everything
+        you need to deploy your app</p>
+      <p class="text-gray-400 text-md max-w-xl lg:max-w-none">Quis tellus eget adipiscing convallis sit sit eget aliquet
+        quis. Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <div class="border-2">
+        <p>Push to deploy
+        </p>
+      </div>
+      <div class="border-2">1</div>
+      <div class="border-2">1</div>
+    </div>
+
+  </div>
+  </div>
+  <div class="overflow-hidden  bg-white py-24 sm:py-0">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+        <div class="lg:pt-4 lg:pr-8">
+          <div class="lg:max-w-lg">
+            <h2 class="text-base/7 font-semibold text-indigo-600">Deploy faster</h2>
+            <p class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">A better
+              workflow</p>
+            <p class="mt-6 text-lg/8 text-gray-600">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
+              impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p>
+            <dl class="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
+              <div class="relative pl-9">
+                <dt class="inline font-semibold text-gray-900">
+                  Push to deploy.
+                </dt>
+                <dd class="inline">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis
+                  suscipit eaque, iste dolor cupiditate blanditiis ratione.</dd>
+              </div>
+              <div class="relative pl-9">
+                <dt class="inline font-semibold text-gray-900">
+                  SSL certificates.
+                </dt>
+                <dd class="inline">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat
+                  commodo.</dd>
+              </div>
+              <div class="relative pl-9">
+                <dt class="inline font-semibold text-gray-900">
+                  Database backups.
+                </dt>
+                <dd class="inline">Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi
+                  lobortis.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <img src="https://tailwindcss.com/plus-assets/img/component-images/dark-project-app-screenshot.png"
+          alt="Product screenshot"
+          class="w-[48rem] max-w-none rounded-xl ring-1 shadow-xl ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
+          width="2432" height="1442">
+      </div>
+    </div>
+  </div>
+
+  <div class="border-1 max-w-7xl  mx-auto">
+    <div class="border-1 border-red-500 p-2 mx-auto grid grid-cols-1 lg:grid-cols-2">
+      <div class="max-w-lg border-1  ">
+        <h2 class="text-sm">Deploy faster</h2>
+        <p class="text-4xl my-2">A better workflow</p>
+        <p class="text-md my-5">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis
+          suscipit eaque, iste dolor cupiditate blanditiis ratione.</p>
+        <div class="my-6 ml-12">
+          <p class="inline text-gray-900">Push to deploy.</p>
+          <p class="inline text-gray-500">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit
+            perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p>
+        </div>
+        <div class="my-6 ml-12">
+
+          <p class="inline text-gray-900">Push to deploy.</p>
+          <p class="inline text-gray-500">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit
+            perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p>
+        </div>
+      </div>
+      <div class="max-w-2xl border-1 p-10">2</div>
+    </div>
+
+  </div> -->
+
+</body>
+
+</html>
