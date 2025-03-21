@@ -14,21 +14,23 @@
     </style>
 </head>
 
-<body class="bg-[#cbcbcb]">
-    <div class="flex flex-col w-dvw justify-center items-center">
-        <div class="justify-center flex bg-[#857e7e] w-full">
+<body class="bg-[#cbcbcb] ">
+    <div class="mx-auto max-w-[1024px] border-1">
+        <div class="flex flex-col w-full justify-center items-center ">
+            <div class="justify-center flex bg-[#857e7e] w-full">
             <P class=" text-gray-200 py-3 underline underline-offset-2 text-xl">Company</P>
+            <button id="hamburgerbtn" class=" relative top-0 right-[-40%] my-3 border-1 rounded text-[#e7e5e3] border-[#e7e5e3] translate-all  hover:text-white hover:border-white  focus:outline-none focus:text-white">
+                <svg class="h-6 w-6 fill-current " viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+                </svg>
+            </button>
         </div>
-        <button id="hamburgerbtn" class="fixed top-0 right-3 my-3 border-1 rounded text-[#e7e5e3] border-[#e7e5e3] translate-all  hover:text-white hover:border-white  focus:outline-none focus:text-white">
-            <svg class="h-6 w-6 fill-current " viewBox="0 0 24 24">
-                <path fill-rule="evenodd" d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
-            </svg>
-        </button>
         <div id="mobileMenu" class="hidden translate-all w-full shadow-lg">
             <P class="py-5 text-center transition-all hover:bg-[#857e7e] hover:text-[#e7e5e3]">2</P>
             <P class="py-5 text-center transition-all hover:bg-[#857e7e] hover:text-[#e7e5e3]">3</P>
         </div>
     </div>
+</div>
 </body>
 <script>
     window.addEventListener("load", (event) => {
