@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖片展示廊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        /* 頂部輪播區域 */
+        .top-carousel {
+            position: relative;
+            height: 400px;
+            background: #000;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .carousel-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .carousel-views {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* 瀑布流佈局 */
+        .gallery-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .masonry-grid {
+            column-count: 4;
+            column-gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .masonry-grid {
+                column-count: 1;
+            }
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .masonry-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+            background: #f0f0f0;
+        }
+
+        .masonry-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-info {
+            padding: 15px;
+            background: white;
+        }
+
+        .image-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .image-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .view-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-icon {
+            width: 16px;
+            height: 16px;
+            fill: #666;
+        }
+
+        /* 圖片放大模態框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #ff6b6b;
+        }
+
+        .modal-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 載入動畫 */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 頂部熱門圖片輪播 -->
+    <div class="top-carousel">
+        <div class="carousel-container" id="carousel">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>載入熱門圖片中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖片展示區 -->
+    <div class="gallery-container">
+        <h1 class="gallery-title">📸 精選圖片集</h1>
+        <div class="masonry-grid" id="gallery">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>載入圖片中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖片放大模態框 -->
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img class="modal-image" id="modalImage" src="" alt="">
+            <div class="modal-info">
+                <div class="modal-title" id="modalTitle"></div>
+                <div class="modal-views" id="modalViews"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 圖片數據管理
+        class ImageGallery {
+            constructor() {
+                this.images = [];
+                this.topImages = [];
+                this.viewCounts = this.loadViewCounts();
+                this.aspectRatios = [
+                    { ratio: '16:9', width: 16, height: 9 },
+                    { ratio: '9:16', width: 9, height: 16 },
+                    { ratio: '4:3', width: 4, height: 3 },
+                    { ratio: '3:4', width: 3, height: 4 },
+                    { ratio: '1:1', width: 1, height: 1 },
+                    { ratio: '3:2', width: 3, height: 2 },
+                    { ratio: '2:3', width: 2, height: 3 }
+                ];
+            }
+
+            loadViewCounts() {
+                const saved = localStorage.getItem('imageViewCounts');
+                return saved ? JSON.parse(saved) : {};
+            }
+
+            saveViewCounts() {
+                localStorage.setItem('imageViewCounts', JSON.stringify(this.viewCounts));
+            }
+
+            incrementView(imageId) {
+                this.viewCounts[imageId] = (this.viewCounts[imageId] || 0) + 1;
+                this.saveViewCounts();
+                return this.viewCounts[imageId];
+            }
+
+            getViewCount(imageId) {
+                return this.viewCounts[imageId] || 0;
+            }
+
+            generateImages(count) {
+                const images = [];
+                for (let i = 1; i <= count; i++) {
+                    const aspectRatio = this.aspectRatios[Math.floor(Math.random() * this.aspectRatios.length)];
+                    const baseSize = 400;
+                    const width = Math.floor(baseSize * aspectRatio.width);
+                    const height = Math.floor(baseSize * aspectRatio.height);
+                    
+                    const imageId = `img_${Date.now()}_${i}`;
+                    const seed = Math.random().toString(36).substring(7);
+                    
+                    images.push({
+                        id: imageId,
+                        title: `精美圖片 ${i}`,
+                        url: `https://picsum.photos/seed/${seed}/${width}/${height}.jpg`,
+                        thumbnailUrl: `https://picsum.photos/seed/${seed}/${Math.min(width, 400)}/${Math.min(height, 400)}.jpg`,
+                        aspectRatio: aspectRatio.ratio,
+                        width: width,
+                        height: height,
+                        views: this.getViewCount(imageId)
+                    });
+                }
+                return images;
+            }
+
+            getTopImages(images, count = 10) {
+                return [...images].sort((a, b) => b.views - a.views).slice(0, count);
+            }
+        }
+
+        // 初始化圖片庫
+        const gallery = new ImageGallery();
+
+        // 輪播功能
+        class Carousel {
+            constructor() {
+                this.currentIndex = 0;
+                this.slides = [];
+                this.interval = null;
+            }
+
+            init(images) {
+                this.slides = images;
+                this.render();
+                this.startAutoPlay();
+            }
+
+            render() {
+                const container = document.getElementById('carousel');
+                container.innerHTML = '';
+
+                this.slides.forEach((image, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+                    slide.innerHTML = `
+                        <img src="${image.url}" alt="${image.title}">
+                        <div class="carousel-info">
+                            <div class="carousel-title">${image.title}</div>
+                            <div class="carousel-views">👁 ${image.views} 次瀏覽</div>
+                        </div>
+                    `;
+                    container.appendChild(slide);
+                });
+
+                // 添加圓點指示器
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'carousel-dots';
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('span');
+                    dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
+                    dot.onclick = () => this.goToSlide(index);
+                    dotsContainer.appendChild(dot);
+                });
+                container.appendChild(dotsContainer);
+            }
+
+            goToSlide(index) {
+                const slides = document.querySelectorAll('.carousel-slide');
+                const dots = document.querySelectorAll('.carousel-dot');
+
+                slides.forEach(slide => slide.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+
+                this.currentIndex = index;
+                slides[index].classList.add('active');
+                dots[index].classList.add('active');
+            }
+
+            nextSlide() {
+                const nextIndex = (this.currentIndex + 1) % this.slides.length;
+                this.goToSlide(nextIndex);
+            }
+
+            startAutoPlay() {
+                this.interval = setInterval(() => this.nextSlide(), 5000);
+            }
+
+            stopAutoPlay() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+            }
+        }
+
+        // 瀑布流渲染
+        function renderGallery(images) {
+            const container = document.getElementById('gallery');
+            container.innerHTML = '';
+
+            images.forEach(image => {
+                const item = document.createElement('div');
+                item.className = 'masonry-item';
+                item.onclick = () => openModal(image);
+
+                item.innerHTML = `
+                    <img src="${image.thumbnailUrl}" alt="${image.title}" loading="lazy">
+                    <div class="image-info">
+                        <div class="image-title">${image.title}</div>
+                        <div class="image-stats">
+                            <span class="view-count">
+                                <svg class="view-icon" viewBox="0 0 24 24">
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                </svg>
+                                ${image.views}
+                            </span>
+                            <span>${image.aspectRatio}</span>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        // 模態框功能
+        function openModal(image) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalViews = document.getElementById('modalViews');
+
+            // 增加瀏覽次數
+            const newViewCount = gallery.incrementView(image.id);
+            
+            // 設置圖片源，使用較大的尺寸以確保清晰度
+            const largeWidth = Math.min(image.width * 2, 1920);
+            const largeHeight = Math.min(image.height * 2, 1080);
+            const seed = image.url.match(/\/seed\/([^\/]+)\//)[1];
+            modalImage.src = `https://picsum.photos/seed/${seed}/${largeWidth}/${largeHeight}.jpg`;
+            
+            modalTitle.textContent = image.title;
+            modalViews.textContent = `👁 ${newViewCount} 次瀏覽`;
+
+            modal.classList.add('active');
+
+            // 更新顯示的瀏覽次數
+            setTimeout(() => updateViewCounts(), 100);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+        }
+
+        // 更新瀏覽次數顯示
+        function updateViewCounts() {
+            // 更新所有圖片的瀏覽次數
+            gallery.images.forEach(image => {
+                image.views = gallery.getViewCount(image.id);
+            });
+
+            // 更新當前顯示的瀏覽次數，不重新渲染整個頁面
+            document.querySelectorAll('.view-count').forEach((element, index) => {
+                const imageId = gallery.images[index]?.id;
+                if (imageId) {
+                    const viewCount = gallery.getViewCount(imageId);
+                    element.innerHTML = `
+                        <svg class="view-icon" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        ${viewCount}
+                    `;
+                }
+            });
+
+            // 更新輪播中的瀏覽次數
+            document.querySelectorAll('.carousel-views').forEach((element, index) => {
+                if (gallery.topImages[index]) {
+                    element.textContent = `👁 ${gallery.topImages[index].views} 次瀏覽`;
+                }
+            });
+        }
+
+        // 鍵盤事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 點擊模態框背景關閉
+        document.getElementById('imageModal').addEventListener('click', (e) => {
+            if (e.target.id === 'imageModal' || e.target.classList.contains('modal-content')) {
+                closeModal();
+            }
+        });
+
+        // 圖片載入錯誤處理
+        function handleImageError(img, fallbackUrl) {
+            img.onerror = function() {
+                console.log('圖片載入失敗，使用備用圖片');
+                img.src = fallbackUrl;
+                img.onerror = null; // 避免無限循環
+            };
+        }
+
+        // 初始化
+        let carousel;
+
+        async function initGallery() {
+            try {
+                // 生成圖片數據
+                gallery.images = gallery.generateImages(30);
+                
+                // 獲取熱門圖片
+                gallery.topImages = gallery.getTopImages(gallery.images, 10);
+                
+                // 初始化輪播
+                carousel = new Carousel();
+                carousel.init(gallery.topImages);
+                
+                // 渲染畫廊
+                renderGallery(gallery.images);
+                
+                // 添加圖片錯誤處理
+                setTimeout(() => {
+                    document.querySelectorAll('img').forEach(img => {
+                        const currentSrc = img.src;
+                        const fallbackSrc = currentSrc.replace(/\/seed\/[^\/]+\//, '/seed/fallback/');
+                        handleImageError(img, fallbackSrc);
+                    });
+                }, 1000);
+                
+            } catch (error) {
+                console.error('初始化失敗:', error);
+                document.getElementById('carousel').innerHTML = '<div class="loading"><p>載入失敗，請重新整理頁面</p></div>';
+                document.getElementById('gallery').innerHTML = '<div class="loading"><p>載入失敗，請重新整理頁面</p></div>';
+            }
+        }
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', initGallery);
+    </script>
+</body>
+</html>
