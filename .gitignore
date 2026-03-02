@@ -34,3 +34,7 @@ coverage/
 # Temporary
 tmp/
 temp/
+
+AGENTS.md
+.agent/
+.agents/
