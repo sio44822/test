@@ -410,6 +410,25 @@
         .carousel-slide img:not([src]) {
             opacity: 0;
         }
+
+        /* 導航連結樣式 */
+        .nav-link {
+            font-size: 14px;
+            margin-left: 20px;
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            color: #764ba2;
+        }
     </style>
 </head>
 <body>
@@ -425,7 +444,7 @@
 
     <!-- 圖片展示區 -->
     <div class="gallery-container">
-        <h1 class="gallery-title"> 😍😍 ki bb 😍😍 <a href="functionico.html" style="font-size: 14px; margin-left: 20px;">功能測試</a></h1>
+        <h1 class="gallery-title"> 😍😍 ki bb 😍😍 <a href="encoding.html" class="nav-link">編碼轉換</a> <a href="functionico.html" style="font-size: 14px; margin-left: 20px;">功能測試</a></h1>
         <div class="masonry-grid" id="gallery">
             <div class="loading">
                 <div class="spinner"></div>

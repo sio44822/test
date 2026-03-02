@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編碼轉換工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .converter-box {
+            padding: 30px;
+        }
+
+        .encoding-selectors {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .selector-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selector-group label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .selector-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .selector-group select:hover {
+            border-color: #667eea;
+        }
+
+        .selector-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .swap-button {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .swap-button:hover {
+            transform: rotate(180deg);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .text-areas {
+            display: flex;
+            gap: 20px;
+        }
+
+        .text-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-panel label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .text-panel textarea {
+            flex: 1;
+            min-height: 350px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: none;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .text-panel textarea:hover {
+            border-color: #667eea;
+        }
+
+        .text-panel textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .text-panel textarea::placeholder {
+            color: #aaa;
+        }
+
+        .result-panel textarea {
+            background: #f8f9fa;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #f5f5f5;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .info-item {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .info-item span {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .encoding-selectors {
+                flex-direction: column;
+            }
+            
+            .swap-button {
+                transform: rotate(90deg);
+            }
+            
+            .swap-button:hover {
+                transform: rotate(270deg);
+            }
+            
+            .text-areas {
+                flex-direction: column;
+            }
+            
+            .text-panel textarea {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-link">← 返回首頁</a>
+            <h1>🔄 編碼轉換工具</h1>
+            <p>輕鬆轉換各種字元編碼</p>
+        </div>
+        
+        <div class="converter-box">
+            <div class="encoding-selectors">
+                <div class="selector-group">
+                    <label>來源編碼</label>
+                    <select id="sourceEncoding">
+                        <optgroup label="Unicode">
+                            <option value="utf-8" selected>UTF-8</option>
+                            <option value="utf-16le">UTF-16 LE (Little Endian)</option>
+                            <option value="utf-16be">UTF-16 BE (Big Endian)</option>
+                            <option value="utf-32">UTF-32</option>
+                        </optgroup>
+                        <optgroup label="中文">
+                            <option value="big5">Big5 (繁體中文)</option>
+                            <option value="gb2312">GB2312 (簡體中文)</option>
+                            <option value="gbk">GBK</option>
+                            <option value="hz">HZ</option>
+                        </optgroup>
+                        <optgroup label="日文">
+                            <option value="shift_jis">Shift-JIS</option>
+                            <option value="euc-jp">EUC-JP</option>
+                            <option value="iso-2022-jp">ISO-2022-JP</option>
+                        </optgroup>
+                        <optgroup label="韓文">
+                            <option value="euc-kr">EUC-KR</option>
+                            <option value="iso-2022-kr">ISO-2022-KR</option>
+                        </optgroup>
+                        <optgroup label="西歐">
+                            <option value="windows-1252">Windows-1252 (西歐)</option>
+                            <option value="iso-8859-1">ISO-8859-1 (拉丁1)</option>
+                            <option value="iso-8859-15">ISO-8859-15 (拉丁9)</option>
+                        </optgroup>
+                        <optgroup label="中歐">
+                            <option value="windows-1250">Windows-1250</option>
+                            <option value="iso-8859-2">ISO-8859-2</option>
+                        </optgroup>
+                        <optgroup label="西里爾文">
+                            <option value="windows-1251">Windows-1251 (西里爾)</option>
+                            <option value="koi8-r">KOI8-R</option>
+                            <option value="iso-8859-5">ISO-8859-5</option>
+                        </optgroup>
+                        <optgroup label="其他">
+                            <option value="tis-620">TIS-620 (泰文)</option>
+                            <option value="iso-8859-7">ISO-8859-7 (希臘文)</option>
+                            <option value="iso-8859-8">ISO-8859-8 (希伯來文)</option>
+                            <option value="iso-8859-6">ISO-8859-6 (阿拉伯文)</option>
+                            <option value="iso-8859-3">ISO-8859-3 (拉丁3)</option>
+                            <option value="iso-8859-4">ISO-8859-4 (拉丁4)</option>
+                            <option value="windows-1253">Windows-1253 (希臘文)</option>
+                            <option value="windows-1254">Windows-1254 (土耳其文)</option>
+                            <option value="windows-1255">Windows-1255 (希伯來文)</option>
+                            <option value="windows-1256">Windows-1256 (阿拉伯文)</option>
+                            <option value="windows-1257">Windows-1257 (波羅的海)</option>
+                            <option value="windows-1258">Windows-1258 (越南)</option>
+                            <option value="iso-8859-10">ISO-8859-10 (北歐)</option>
+                            <option value="iso-8859-11">ISO-8859-11 (泰文)</option>
+                            <option value="iso-8859-13">ISO-8859-13 (波羅的海)</option>
+                            <option value="iso-8859-14">ISO-8859-14 (凱爾特)</option>
+                            <option value="iso-8859-16">ISO-8859-16 (東歐)</option>
+                            <option value="gb18030">GB18030</option>
+                            <option value="big5hkscs">Big5-HKSCS (香港繁體)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <button class="swap-button" id="swapButton" title="交換來源和目標編碼">⇄</button>
+                
+                <div class="selector-group">
+                    <label>目標編碼</label>
+                    <select id="targetEncoding">
+                        <optgroup label="Unicode">
+                            <option value="utf-8" selected>UTF-8</option>
+                            <option value="utf-16le">UTF-16 LE (Little Endian)</option>
+                            <option value="utf-16be">UTF-16 BE (Big Endian)</option>
+                            <option value="utf-32">UTF-32</option>
+                        </optgroup>
+                        <optgroup label="中文">
+                            <option value="big5">Big5 (繁體中文)</option>
+                            <option value="gb2312">GB2312 (簡體中文)</option>
+                            <option value="gbk">GBK</option>
+                            <option value="hz">HZ</option>
+                        </optgroup>
+                        <optgroup label="日文">
+                            <option value="shift_jis">Shift-JIS</option>
+                            <option value="euc-jp">EUC-JP</option>
+                            <option value="iso-2022-jp">ISO-2022-JP</option>
+                        </optgroup>
+                        <optgroup label="韓文">
+                            <option value="euc-kr">EUC-KR</option>
+                            <option value="iso-2022-kr">ISO-2022-KR</option>
+                        </optgroup>
+                        <optgroup label="西歐">
+                            <option value="windows-1252">Windows-1252 (西歐)</option>
+                            <option value="iso-8859-1">ISO-8859-1 (拉丁1)</option>
+                            <option value="iso-8859-15">ISO-8859-15 (拉丁9)</option>
+                        </optgroup>
+                        <optgroup label="中歐">
+                            <option value="windows-1250">Windows-1250</option>
+                            <option value="iso-8859-2">ISO-8859-2</option>
+                        </optgroup>
+                        <optgroup label="西里爾文">
+                            <option value="windows-1251">Windows-1251 (西里爾)</option>
+                            <option value="koi8-r">KOI8-R</option>
+                            <option value="iso-8859-5">ISO-8859-5</option>
+                        </optgroup>
+                        <optgroup label="其他">
+                            <option value="tis-620">TIS-620 (泰文)</option>
+                            <option value="iso-8859-7">ISO-8859-7 (希臘文)</option>
+                            <option value="iso-8859-8">ISO-8859-8 (希伯來文)</option>
+                            <option value="iso-8859-6">ISO-8859-6 (阿拉伯文)</option>
+                            <option value="iso-8859-3">ISO-8859-3 (拉丁3)</option>
+                            <option value="iso-8859-4">ISO-8859-4 (拉丁4)</option>
+                            <option value="windows-1253">Windows-1253 (希臘文)</option>
+                            <option value="windows-1254">Windows-1254 (土耳其文)</option>
+                            <option value="windows-1255">Windows-1255 (希伯來文)</option>
+                            <option value="windows-1256">Windows-1256 (阿拉伯文)</option>
+                            <option value="windows-1257">Windows-1257 (波羅的海)</option>
+                            <option value="windows-1258">Windows-1258 (越南)</option>
+                            <option value="iso-8859-10">ISO-8859-10 (北歐)</option>
+                            <option value="iso-8859-11">ISO-8859-11 (泰文)</option>
+                            <option value="iso-8859-13">ISO-8859-13 (波羅的海)</option>
+                            <option value="iso-8859-14">ISO-8859-14 (凱爾特)</option>
+                            <option value="iso-8859-16">ISO-8859-16 (東歐)</option>
+                            <option value="gb18030">GB18030</option>
+                            <option value="big5hkscs">Big5-HKSCS (香港繁體)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="text-areas">
+                <div class="text-panel">
+                    <label>原始文字</label>
+                    <textarea id="sourceText" placeholder="在此輸入要轉換的文字..."></textarea>
+                </div>
+                <div class="text-panel result-panel">
+                    <label>轉換結果</label>
+                    <textarea id="targetText" placeholder="轉換後的文字將顯示在這裡..." readonly></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-bar">
+            <div class="info-item">來源字元數: <span id="sourceCharCount">0</span></div>
+            <div class="info-item">目標字元數: <span id="targetCharCount">0</span></div>
+            <div class="info-item">來源位元組: <span id="sourceByteCount">0</span> bytes</div>
+            <div class="info-item">目標位元組: <span id="targetByteCount">0</span> bytes</div>
+        </div>
+    </div>
+
+    <script>
+        const sourceText = document.getElementById('sourceText');
+        const targetText = document.getElementById('targetText');
+        const sourceEncoding = document.getElementById('sourceEncoding');
+        const targetEncoding = document.getElementById('targetEncoding');
+        const swapButton = document.getElementById('swapButton');
+
+        const sourceCharCount = document.getElementById('sourceCharCount');
+        const targetCharCount = document.getElementById('targetCharCount');
+        const sourceByteCount = document.getElementById('sourceByteCount');
+        const targetByteCount = document.getElementById('targetByteCount');
+
+        function encodeString(text, encoding) {
+            try {
+                const encoder = new TextEncoder();
+                return encoder.encode(text);
+            } catch (e) {
+                console.error('Encoding error:', e);
+                return null;
+            }
+        }
+
+        function decodeString(bytes, encoding) {
+            try {
+                const decoder = new TextDecoder(encoding);
+                return decoder.decode(bytes);
+            } catch (e) {
+                console.error('Decoding error:', e);
+                return null;
+            }
+        }
+
+        function convert() {
+            const input = sourceText.value;
+            if (!input) {
+                targetText.value = '';
+                updateCounts();
+                return;
+            }
+
+            const sourceEnc = sourceEncoding.value;
+            const targetEnc = targetEncoding.value;
+
+            try {
+                let bytes;
+                if (sourceEnc === 'utf-8') {
+                    bytes = encodeString(input, 'utf-8');
+                } else {
+                    bytes = encodeString(input, 'utf-8');
+                }
+
+                let result;
+                if (targetEnc === 'utf-8') {
+                    result = decodeString(bytes, 'utf-8');
+                } else {
+                    result = decodeString(bytes, targetEnc);
+                }
+
+                if (result !== null) {
+                    targetText.value = result;
+                } else {
+                    targetText.value = '[無法轉換，請檢查編碼是否支援]';
+                }
+            } catch (e) {
+                targetText.value = '[轉換錯誤: ' + e.message + ']';
+            }
+
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const source = sourceText.value;
+            const target = targetText.value;
+
+            sourceCharCount.textContent = source.length;
+            targetCharCount.textContent = target.length;
+
+            try {
+                const sourceBytes = new TextEncoder().encode(source);
+                const targetBytes = new TextEncoder().encode(target);
+                sourceByteCount.textContent = sourceBytes.length;
+                targetByteCount.textContent = targetBytes.length;
+            } catch (e) {
+                sourceByteCount.textContent = '0';
+                targetByteCount.textContent = '0';
+            }
+        }
+
+        function swapEncodings() {
+            const temp = sourceEncoding.value;
+            sourceEncoding.value = targetEncoding.value;
+            targetEncoding.value = temp;
+
+            const tempText = sourceText.value;
+            sourceText.value = targetText.value;
+            targetText.value = tempText;
+
+            convert();
+        }
+
+        sourceText.addEventListener('input', convert);
+        sourceEncoding.addEventListener('change', convert);
+        targetEncoding.addEventListener('change', convert);
+        swapButton.addEventListener('click', swapEncodings);
+
+        targetText.addEventListener('click', function() {
+            if (this.value) {
+                navigator.clipboard.writeText(this.value).then(() => {
+                    const originalPlaceholder = this.placeholder;
+                    this.placeholder = '已複製到剪貼簿！';
+                    setTimeout(() => {
+                        this.placeholder = originalPlaceholder;
+                    }, 1500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
