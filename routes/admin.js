@@ -122,6 +122,12 @@ router.get('/products', authenticateToken, async (req, res) => {
         for (let product of products) {
             const [images] = await pool.query('SELECT * FROM product_images WHERE product_id = ? ORDER BY display_order', [product.id]);
             product.images = images;
+            
+            const [cats] = await pool.query(`
+                SELECT c.id, c.name FROM product_categories pc 
+                JOIN categories c ON pc.category_id = c.id 
+                WHERE pc.product_id = ?`, [product.id]);
+            product.categories = cats;
         }
 
         res.json(products);
@@ -133,22 +139,28 @@ router.get('/products', authenticateToken, async (req, res) => {
 
 router.post('/products', authenticateToken, async (req, res) => {
     try {
-        const { name, description, price, category_id, is_featured = 0, is_active = 1, display_order = 0, image_paths = [] } = req.body;
+        const { name, description, price, discount_price, discount_percent, discount_type, discount_start, discount_end, category_id, category_ids, is_featured = 0, is_active = 1, display_order = 0, image_paths = [] } = req.body;
 
         if (!name) {
             return res.status(400).json({ error: '請提供商品名稱' });
         }
 
         const [result] = await pool.query(
-            'INSERT INTO products (name, description, price, category_id, is_featured, is_active, display_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, description || '', price || 0, category_id || null, is_featured, is_active, display_order]
+            'INSERT INTO products (name, description, price, discount_price, discount_percent, discount_type, discount_start, discount_end, category_id, is_featured, is_active, display_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [name, description || '', price || 0, discount_price || null, discount_percent || null, discount_type || 'fixed', discount_start || null, discount_end || null, category_id || null, is_featured, is_active, display_order]
         );
 
         const productId = result.insertId;
 
-        if (image_paths.length > 0) {
+        if (image_paths && image_paths.length > 0) {
             for (let i = 0; i < image_paths.length; i++) {
                 await pool.query('INSERT INTO product_images (product_id, image_path, display_order) VALUES (?, ?, ?)', [productId, image_paths[i], i]);
+            }
+        }
+
+        if (category_ids && category_ids.length > 0) {
+            for (const catId of category_ids) {
+                await pool.query('INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)', [productId, catId]);
             }
         }
 
@@ -162,12 +174,19 @@ router.post('/products', authenticateToken, async (req, res) => {
 router.put('/products/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, price, category_id, is_featured, is_active, display_order } = req.body;
+        const { name, description, price, discount_price, discount_percent, discount_type, discount_start, discount_end, category_id, category_ids, is_featured, is_active, display_order } = req.body;
 
         await pool.query(
-            'UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, is_featured = ?, is_active = ?, display_order = ? WHERE id = ?',
-            [name, description || '', price || 0, category_id || null, is_featured || 0, is_active !== undefined ? is_active : 1, display_order || 0, id]
+            'UPDATE products SET name = ?, description = ?, price = ?, discount_price = ?, discount_percent = ?, discount_type = ?, discount_start = ?, discount_end = ?, category_id = ?, is_featured = ?, is_active = ?, display_order = ? WHERE id = ?',
+            [name, description || '', price || 0, discount_price || null, discount_percent || null, discount_type || 'fixed', discount_start || null, discount_end || null, category_id || null, is_featured || 0, is_active !== undefined ? is_active : 1, display_order || 0, id]
         );
+
+        if (category_ids) {
+            await pool.query('DELETE FROM product_categories WHERE product_id = ?', [id]);
+            for (const catId of category_ids) {
+                await pool.query('INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)', [id, catId]);
+            }
+        }
 
         res.json({ id: parseInt(id), message: '商品已更新' });
     } catch (error) {

@@ -4,10 +4,21 @@ const { pool } = require('../database');
 
 router.get('/products', async (req, res) => {
     try {
-        const { search, category, price_min, price_max, sort, page = 1, limit = 20 } = req.query;
+        const { search, category, price_min, price_max, sort, page = 1, limit = 20, is_active } = req.query;
         
-        let sql = 'SELECT p.*, c.name as category_name, (SELECT image_path FROM product_images WHERE product_id = p.id ORDER BY display_order LIMIT 1) as main_image FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1';
+        let sql = `SELECT p.*, c.name as category_name, 
+            (SELECT image_path FROM product_images WHERE product_id = p.id ORDER BY display_order LIMIT 1) as main_image 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            WHERE 1=1`;
         const params = [];
+
+        if (is_active === undefined || is_active === null || is_active === '') {
+            sql += ' AND p.is_active = 1';
+        } else if (is_active !== 'all') {
+            sql += ' AND p.is_active = ?';
+            params.push(is_active === 'true' ? 1 : 0);
+        }
 
         if (search) {
             sql += ' AND (p.name LIKE ? OR p.description LIKE ?)';
@@ -15,7 +26,7 @@ router.get('/products', async (req, res) => {
         }
 
         if (category) {
-            sql += ' AND p.category_id = ?';
+            sql += ' AND p.id IN (SELECT product_id FROM product_categories WHERE category_id = ?)';
             params.push(category);
         }
 
@@ -52,6 +63,12 @@ router.get('/products', async (req, res) => {
         for (let product of products) {
             const [images] = await pool.query('SELECT * FROM product_images WHERE product_id = ? ORDER BY display_order', [product.id]);
             product.images = images;
+            
+            const [cats] = await pool.query(`
+                SELECT c.id, c.name FROM product_categories pc 
+                JOIN categories c ON pc.category_id = c.id 
+                WHERE pc.product_id = ?`, [product.id]);
+            product.categories = cats;
         }
 
         res.json(products);

@@ -41,6 +41,11 @@ async function initDatabase() {
                 name VARCHAR(100) NOT NULL,
                 description TEXT,
                 price DECIMAL(10,2) DEFAULT 0,
+                discount_price DECIMAL(10,2) DEFAULT NULL,
+                discount_percent INT DEFAULT NULL,
+                discount_type ENUM('fixed', 'percent') DEFAULT 'fixed',
+                discount_start DATETIME DEFAULT NULL,
+                discount_end DATETIME DEFAULT NULL,
                 category_id INT,
                 is_featured TINYINT DEFAULT 0,
                 is_active TINYINT DEFAULT 1,
@@ -48,6 +53,17 @@ async function initDatabase() {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+            )
+        `);
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS product_categories (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_id INT NOT NULL,
+                category_id INT NOT NULL,
+                FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+                UNIQUE KEY unique_product_category (product_id, category_id)
             )
         `);
 
@@ -70,6 +86,67 @@ async function initDatabase() {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         `);
+
+        try {
+            const [columns] = await connection.query('SHOW COLUMNS FROM products LIKE "discount_price"');
+            if (!columns || columns.length === 0) {
+                await connection.query(`ALTER TABLE products ADD COLUMN discount_price DECIMAL(10,2) DEFAULT NULL`);
+            }
+        } catch (e) {
+            console.log('discount_price column may already exist');
+        }
+
+        try {
+            const [columns] = await connection.query('SHOW COLUMNS FROM products LIKE "discount_percent"');
+            if (!columns || columns.length === 0) {
+                await connection.query(`ALTER TABLE products ADD COLUMN discount_percent INT DEFAULT NULL`);
+            }
+        } catch (e) {
+            console.log('discount_percent column may already exist');
+        }
+
+        try {
+            const [typeCols] = await connection.query('SHOW COLUMNS FROM products LIKE "discount_type"');
+            if (!typeCols || typeCols.length === 0) {
+                await connection.query(`ALTER TABLE products ADD COLUMN discount_type VARCHAR(20) DEFAULT 'fixed'`);
+            }
+        } catch (e) {
+            console.log('discount_type column may already exist');
+        }
+
+        try {
+            const [startCols] = await connection.query('SHOW COLUMNS FROM products LIKE "discount_start"');
+            if (!startCols || startCols.length === 0) {
+                await connection.query(`ALTER TABLE products ADD COLUMN discount_start DATETIME DEFAULT NULL`);
+            }
+        } catch (e) {
+            console.log('discount_start column may already exist');
+        }
+
+        try {
+            const [endCols] = await connection.query('SHOW COLUMNS FROM products LIKE "discount_end"');
+            if (!endCols || endCols.length === 0) {
+                await connection.query(`ALTER TABLE products ADD COLUMN discount_end DATETIME DEFAULT NULL`);
+            }
+        } catch (e) {
+            console.log('discount_end column may already exist');
+        }
+
+        try {
+            const [tables] = await connection.query(`SHOW TABLES LIKE "product_categories"`);
+            if (!tables || tables.length === 0) {
+                await connection.query(`CREATE TABLE product_categories (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    product_id INT NOT NULL,
+                    category_id INT NOT NULL,
+                    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+                    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+                    UNIQUE KEY unique_product_category (product_id, category_id)
+                )`);
+            }
+        } catch (e) {
+            console.log('product_categories table may already exist');
+        }
 
         console.log('資料庫資料表建立完成');
     } catch (error) {

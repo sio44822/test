@@ -58,7 +58,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
-            padding: 16px 24px;
+            padding: 12px 24px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -68,8 +68,41 @@
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        .menu-toggle {
+            position: absolute;
+            left: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         .logo {
@@ -78,28 +111,110 @@
             font-weight: 500;
         }
 
-        .admin-link {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 14px;
-            padding: 8px 16px;
-            border: 1px solid var(--accent);
-            border-radius: 20px;
-            transition: all 0.3s ease;
+        .search-bar {
+            position: fixed;
+            top: 60px;
+            left: -300px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px;
+            transition: left 0.3s ease;
+            z-index: 99;
+            overflow-y: auto;
         }
 
-        .admin-link:hover {
+        .search-bar.active {
+            left: 0;
+        }
+
+        .search-bar .search-input {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .search-bar .filter-select {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .search-bar-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .menu-btn {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .menu-btn:hover {
             background: var(--accent);
             color: white;
+            border-color: var(--accent);
         }
 
-        .search-bar {
-            max-width: 1400px;
-            margin: 24px auto;
-            padding: 0 24px;
+        .menu-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .category-list {
             display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .category-btn {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .category-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .category-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .mobile-admin-link {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 18px;
+            }
         }
 
         .search-input {
@@ -214,6 +329,36 @@
         .product-price {
             font-weight: 600;
             color: var(--accent);
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        .price-discount {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #dc2626;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .discount-timer {
+            font-size: 12px;
+            color: #dc2626;
+            margin-top: 4px;
         }
 
         .carousel-dots {
@@ -470,21 +615,23 @@
 <body>
     <header class="header">
         <div class="header-content">
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="logo">線上型錄</div>
-            <a href="/admin" class="admin-link">管理後台</a>
         </div>
     </header>
 
-    <div class="search-bar">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜尋商品..." oninput="handleSearch()">
-        <select class="filter-select" id="categoryFilter" onchange="handleCategoryChange()">
-            <option value="">所有分類</option>
-        </select>
-        <select class="filter-select" id="sortSelect" onchange="handleSortChange()">
-            <option value="newest">最新上架</option>
-            <option value="price_asc">價格：低到高</option>
-            <option value="price_desc">價格：高到低</option>
-        </select>
+    <div class="search-bar" id="searchBar">
+        <div class="search-bar-title">最新上架</div>
+        <button class="menu-btn" onclick="handleSortChange('newest')">最新上架</button>
+        
+        <div class="search-bar-title">分類</div>
+        <div class="category-list" id="categoryList"></div>
+
+        <a href="/admin" class="admin-link mobile-admin-link">管理後台</a>
     </div>
 
     <div class="top-carousel">
@@ -497,7 +644,7 @@
     </div>
 
     <div class="gallery-container">
-        <h1 class="gallery-title">精選商品</h1>
+        <h1 class="gallery-title">全部商品</h1>
         <div class="masonry-grid" id="gallery">
             <div class="loading">
                 <div class="spinner"></div>
@@ -524,6 +671,49 @@
         let categories = [];
         let carouselInterval = null;
 
+        function isDiscountActive(product) {
+            const hasDiscount = product.discount_price || product.discount_percent;
+            if (!hasDiscount) return false;
+            
+            const now = new Date();
+            const start = product.discount_start ? new Date(product.discount_start) : null;
+            const end = product.discount_end ? new Date(product.discount_end) : null;
+            
+            if (!start && !end) return true;
+            
+            if (start && end) {
+                return now >= start && now <= end;
+            } else if (start && !end) {
+                return now >= start;
+            } else if (!start && end) {
+                return now <= end;
+            }
+            
+            return false;
+        }
+
+        function getDiscountedPrice(product) {
+            const discountType = product.discount_type || 'fixed';
+            if (discountType === 'percent' && product.discount_percent) {
+                return product.price * (1 - product.discount_percent / 100);
+            }
+            return product.discount_price || product.price;
+        }
+
+        function formatPrice(product) {
+            if (isDiscountActive(product)) {
+                const discountType = product.discount_type || 'fixed';
+                let discountedPrice;
+                if (discountType === 'percent' && product.discount_percent) {
+                    discountedPrice = product.price * (1 - product.discount_percent / 100);
+                } else {
+                    discountedPrice = product.discount_price || product.price;
+                }
+                return `<span class="price-original">$${parseFloat(product.price).toFixed(0)}</span> <span class="price-discount">$${discountedPrice.toFixed(0)}</span>`;
+            }
+            return `$${parseFloat(product.price).toFixed(0)}`;
+        }
+
         async function loadCategories() {
             try {
                 const response = await fetch(`${API_URL}/categories`);
@@ -534,25 +724,23 @@
             }
         }
 
+        let currentCategory = '';
+        let currentSort = 'newest';
+
         function renderCategoryFilter() {
-            const filter = document.getElementById('categoryFilter');
-            filter.innerHTML = '<option value="">所有分類</option>' + 
-                categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+            const list = document.getElementById('categoryList');
+            list.innerHTML = `<button class="category-btn ${currentCategory === '' ? 'active' : ''}" onclick="handleCategoryChange('')">所有分類</button>` + 
+                categories.map(cat => `<button class="category-btn ${currentCategory == cat.id ? 'active' : ''}" onclick="handleCategoryChange(${cat.id})">${cat.name}</button>`).join('');
         }
 
         async function loadProducts() {
+            let url = `${API_URL}/products?`;
+            const params = new URLSearchParams();
+            if (currentSort) params.append('sort', currentSort);
+            if (currentCategory) params.append('category', currentCategory);
+            url += params.toString();
+
             try {
-                const search = document.getElementById('searchInput').value;
-                const category = document.getElementById('categoryFilter').value;
-                const sort = document.getElementById('sortSelect').value;
-
-                let url = `${API_URL}/products?`;
-                const params = new URLSearchParams();
-                if (search) params.append('search', search);
-                if (category) params.append('category', category);
-                if (sort) params.append('sort', sort);
-                url += params.toString();
-
                 const response = await fetch(url);
                 products = await response.json();
 
@@ -566,38 +754,41 @@
 
         function renderFeaturedProducts() {
             const container = document.getElementById('carousel');
-            const featured = products.filter(p => p.is_featured);
+            const activeProducts = products.filter(p => p.is_active);
+            
+            const shuffled = [...activeProducts].sort(() => Math.random() - 0.5);
+            const carouselProducts = shuffled.slice(0, 5);
 
-            if (featured.length === 0) {
+            if (carouselProducts.length === 0) {
                 container.innerHTML = `
                     <div class="carousel-slide active">
                         <div class="carousel-info">
                             <div class="carousel-title">歡迎參觀我們的線上型錄</div>
-                            <div class="carousel-views">精選商品將在此展示</div>
+                            <div class="carousel-views">敬請期待最新商品</div>
                         </div>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = featured.map((product, index) => `
-                <div class="carousel-slide ${index === 0 ? 'active' : ''}">
+            container.innerHTML = carouselProducts.map((product, index) => `
+                <div class="carousel-slide ${index === 0 ? 'active' : ''}" onclick="openProductModal(${product.id})" style="cursor: pointer;">
                     <img src="${product.main_image || ''}" alt="${product.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23f3f1ee%22 width=%22200%22 height=%22200%22/><text fill=%22%238a8a8a%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>無圖片</text></svg>'">
                     <div class="carousel-info">
                         <div class="carousel-title">${product.name}</div>
                         <div class="carousel-views">
-                            <span class="product-price">$${parseFloat(product.price).toFixed(0)}</span>
+                            <span class="product-price">${formatPrice(product)}</span>
                         </div>
                     </div>
                 </div>
             `).join('') + '<div class="carousel-dots">' + 
-                featured.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>`).join('') + 
+                carouselProducts.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>`).join('') + 
                 '</div>';
 
-            if (featured.length > 1) {
+            if (carouselProducts.length > 1) {
                 let currentIndex = 0;
                 carouselInterval = setInterval(() => {
-                    currentIndex = (currentIndex + 1) % featured.length;
+                    currentIndex = (currentIndex + 1) % carouselProducts.length;
                     goToSlide(currentIndex);
                 }, 5000);
             }
@@ -630,11 +821,12 @@
 
                 return `
                     <div class="masonry-item" onclick="openProductModal(${product.id})">
+                        ${isDiscountActive(product) ? `<span class="discount-badge">${product.discount_type === 'percent' && product.discount_percent ? product.discount_percent + '% OFF' : '特價'}</span>` : ''}
                         <img src="${product.main_image || ''}" alt="${product.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22><rect fill=%22%23f3f1ee%22 width=%22300%22 height=%22200%22/><text fill=%22%238a8a8a%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>無圖片</text></svg>'">
                         <div class="image-info">
                             <div class="image-title">${product.name}</div>
                             <div class="image-stats">
-                                <span class="product-price">$${parseFloat(product.price).toFixed(0)}</span>
+                                <span class="product-price">${formatPrice(product)}</span>
                                 ${product.category_name ? `<span class="category-tag">${product.category_name}</span>` : ''}
                             </div>
                         </div>
@@ -653,7 +845,28 @@
 
             document.getElementById('productModalImage').src = product.main_image || '';
             document.getElementById('productModalTitle').textContent = product.name;
-            document.getElementById('productModalPrice').textContent = `$${parseFloat(product.price).toFixed(0)}`;
+            
+            const priceEl = document.getElementById('productModalPrice');
+            const hasDiscount = product.discount_price || product.discount_percent;
+            if (hasDiscount) {
+                const hasTimeRange = product.discount_start && product.discount_end;
+                let showDiscount = !hasTimeRange;
+                if (hasTimeRange) {
+                    const now = new Date();
+                    const start = new Date(product.discount_start);
+                    const end = new Date(product.discount_end);
+                    showDiscount = now >= start && now <= end;
+                }
+                if (showDiscount) {
+                    const discountedPrice = getDiscountedPrice(product);
+                    priceEl.innerHTML = `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 18px;">$${parseFloat(product.price).toFixed(0)}</span> <span style="color: #dc2626; font-size: 28px;">$${discountedPrice.toFixed(0)}</span>`;
+                } else {
+                    priceEl.textContent = `$${parseFloat(product.price).toFixed(0)}`;
+                }
+            } else {
+                priceEl.textContent = `$${parseFloat(product.price).toFixed(0)}`;
+            }
+            
             document.getElementById('productModalDescription').textContent = product.description || '尚無商品描述';
             document.getElementById('productModalCategory').textContent = product.category_name || '無分類';
 
@@ -681,15 +894,27 @@
             loadProducts();
         }
 
-        function handleSearch() {
+        function toggleMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const searchBar = document.getElementById('searchBar');
+            menuToggle.classList.toggle('active');
+            searchBar.classList.toggle('active');
+        }
+
+        function handleSortChange(sort) {
+            currentSort = sort || 'newest';
+            if (event && event.target) {
+                document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+            toggleMenu();
             loadProducts();
         }
 
-        function handleCategoryChange() {
-            loadProducts();
-        }
-
-        function handleSortChange() {
+        function handleCategoryChange(categoryId) {
+            currentCategory = categoryId === '' ? '' : categoryId;
+            renderCategoryFilter();
+            toggleMenu();
             loadProducts();
         }
 
