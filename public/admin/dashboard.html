@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理後台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #faf9f7;
+            --bg-secondary: #f3f1ee;
+            --text-primary: #2d2d2d;
+            --text-secondary: #5a5a5a;
+            --accent: #c4a77d;
+            --accent-light: #e8d9c0;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(196, 167, 125, 0.25);
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Serif TC', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .username {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--glass-bg);
+            padding: 8px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: var(--accent-light);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #b39568;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        th {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-images {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .product-images img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-featured {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .editable-cell {
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .editable-cell:hover {
+            background: var(--accent-light);
+        }
+
+        .editable-cell::after {
+            content: '✏️';
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .editable-cell:hover::after {
+            opacity: 1;
+        }
+
+        .editable-input {
+            width: 100%;
+            min-width: 80px;
+            padding: 8px 10px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            color: var(--text-primary);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .editable-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        @media (max-width: 768px) {
+            .editable-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+        }
+
+        .inline-edit-btns {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .inline-edit-btns .btn {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 70px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #dc2626;
+            transition: 0.3s;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #16a34a;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(42px);
+        }
+
+        .toggle-slider .toggle-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+            z-index: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 22px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .image-preview-item .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .back-home {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-home:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-title">管理後台</div>
+        <div class="header-right">
+            <span class="username" id="username"></span>
+            <a href="/" class="back-home">返回前台</a>
+            <button class="logout-btn" onclick="logout()">登出</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('products')">商品管理</button>
+            <button class="tab-btn" onclick="switchTab('categories')">分類管理</button>
+        </div>
+
+        <div id="products-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">商品列表</h2>
+                    <button class="btn btn-primary" onclick="openProductModal()">新增商品</button>
+                </div>
+                <div id="products-loading" class="loading">載入中...</div>
+                <div id="products-table-container"></div>
+            </div>
+        </div>
+
+        <div id="categories-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">分類列表</h2>
+                    <button class="btn btn-primary" onclick="openCategoryModal()">新增分類</button>
+                </div>
+                <div id="categories-loading" class="loading">載入中...</div>
+                <div id="categories-table-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="productModalTitle">新增商品</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label class="form-label">商品名稱 *</label>
+                    <input type="text" class="form-input" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">商品描述</label>
+                    <textarea class="form-textarea" id="productDescription"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">價格</label>
+                        <input type="number" class="form-input" id="productPrice" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">分類</label>
+                        <select class="form-select" id="productCategory">
+                            <option value="">無分類</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">顯示順序</label>
+                        <input type="number" class="form-input" id="productOrder" value="0">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end; gap: 16px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="productFeatured">
+                            <label for="productFeatured">精選商品（輪播顯示）</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="productActive" checked>
+                            <label for="productActive">上架</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">商品圖片</label>
+                    <div class="image-upload-area" onclick="document.getElementById('productImages').click()">
+                        <p>點擊上傳圖片（可多選）</p>
+                        <input type="file" id="productImages" multiple accept="image/*" style="display: none" onchange="handleImageUpload(this)">
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" style="background: #e5e5e5;" onclick="closeProductModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="categoryModalTitle">新增分類</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label class="form-label">分類名稱 *</label>
+                    <input type="text" class="form-input" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">URL 別名 *</label>
+                    <input type="text" class="form-input" id="categorySlug" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">顯示順序</label>
+                    <input type="number" class="form-input" id="categoryOrder" value="0">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" style="background: #e5e5e5;" onclick="closeCategoryModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = '/api/admin';
+        let token = localStorage.getItem('adminToken');
+        let categories = [];
+        let uploadedImages = [];
+
+        if (!token) {
+            window.location.href = '/admin';
+        }
+
+        document.getElementById('username').textContent = localStorage.getItem('adminUsername') || '管理者';
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUsername');
+            window.location.href = '/admin';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            if (tab === 'products') loadProducts();
+            else if (tab === 'categories') loadCategories();
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const headers = { 'Authorization': `Bearer ${token}` };
+            if (body && !(body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+            }
+
+            const options = { method, headers };
+            if (body) {
+                options.body = body instanceof FormData ? body : JSON.stringify(body);
+            }
+
+            const response = await fetch(`${API_URL}${endpoint}`, options);
+            const data = await response.json();
+
+            if (response.status === 401 || response.status === 403) {
+                logout();
+                throw new Error(data.error || '請重新登入');
+            }
+
+            if (!response.ok) {
+                throw new Error(data.error || '操作失敗');
+            }
+
+            return data;
+        }
+
+        async function loadCategories() {
+            try {
+                categories = await apiCall('/categories');
+                renderCategories();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function renderCategories() {
+            document.getElementById('categories-loading').style.display = 'none';
+            
+            if (categories.length === 0) {
+                document.getElementById('categories-table-container').innerHTML = '<div class="empty-state">尚無分類資料</div>';
+                return;
+            }
+
+            document.getElementById('categories-table-container').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>順序</th>
+                            <th>名稱</th>
+                            <th>別名</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${categories.map(cat => `
+                            <tr>
+                                <td>${cat.display_order}</td>
+                                <td>${cat.name}</td>
+                                <td>${cat.slug}</td>
+                                <td class="action-btns">
+                                    <button class="btn btn-primary btn-sm" onclick="editCategory(${cat.id})">編輯</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteCategory(${cat.id})">刪除</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function openCategoryModal(id = null) {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            document.getElementById('categoryModalTitle').textContent = '新增分類';
+            
+            if (id) {
+                const category = categories.find(c => c.id === id);
+                document.getElementById('categoryId').value = category.id;
+                document.getElementById('categoryModalTitle').textContent = '編輯分類';
+                document.getElementById('categoryName').value = category.name;
+                document.getElementById('categorySlug').value = category.slug;
+                document.getElementById('categoryOrder').value = category.display_order;
+            }
+            
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('categoryId').value;
+            const data = {
+                name: document.getElementById('categoryName').value,
+                slug: document.getElementById('categorySlug').value,
+                display_order: parseInt(document.getElementById('categoryOrder').value) || 0
+            };
+
+            try {
+                if (id) {
+                    await apiCall(`/categories/${id}`, 'PUT', data);
+                    showToast('分類已更新');
+                } else {
+                    await apiCall('/categories', 'POST', data);
+                    showToast('分類已新增');
+                }
+                closeCategoryModal();
+                loadCategories();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+
+        async function editCategory(id) {
+            openCategoryModal(id);
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('確定要刪除此分類嗎？')) return;
+            
+            try {
+                await apiCall(`/categories/${id}`, 'DELETE');
+                showToast('分類已刪除');
+                loadCategories();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const [products, cats] = await Promise.all([
+                    apiCall('/products'),
+                    apiCall('/categories')
+                ]);
+                categories = cats;
+                renderProducts(products);
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function renderProducts(products) {
+            document.getElementById('products-loading').style.display = 'none';
+            
+            if (products.length === 0) {
+                document.getElementById('products-table-container').innerHTML = '<div class="empty-state">尚無商品資料</div>';
+                return;
+            }
+
+            const categoryOptions = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            document.getElementById('products-table-container').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>圖片</th>
+                            <th>名稱</th>
+                            <th>分類</th>
+                            <th>價格</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(p => `
+                            <tr data-product-id="${p.id}">
+                                <td>
+                                    <div class="product-images">
+                                        ${(p.images || []).slice(0, 3).map(img => 
+                                            `<img src="${img.image_path}" alt="">`
+                                        ).join('')}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="editable-cell" onclick="showEditField(${p.id}, 'name', '${p.name.replace(/'/g, "\\'")}')" id="cell-name-${p.id}">${p.name}</div>
+                                </td>
+                                <td>
+                                    <div class="editable-cell" onclick="showEditField(${p.id}, 'category', '${p.category_id || ''}')" id="cell-category-${p.id}">${p.category_name || '-'}</div>
+                                </td>
+                                <td>
+                                    <div class="editable-cell" onclick="showEditField(${p.id}, 'price', '${p.price}')" id="cell-price-${p.id}">$${parseFloat(p.price).toFixed(2)}</div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" ${p.is_active ? 'checked' : ''} onchange="toggleProductStatus(${p.id}, this.checked)">
+                                            <span class="toggle-slider">
+                                                <span class="toggle-label">${p.is_active ? '上架' : '下架'}</span>
+                                            </span>
+                                        </label>
+                                        <span class="status-badge ${p.is_featured ? 'status-featured' : ''}" style="${p.is_featured ? '' : 'background: #f3f4f6; color: #9ca3af;'}">${p.is_featured ? '精選' : '一般'}</span>
+                                    </div>
+                                </td>
+                                <td class="action-btns">
+                                    <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">刪除</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            window.productCategories = categories;
+        }
+
+        let editingField = null;
+
+        function showEditField(productId, field, currentValue) {
+            if (editingField) {
+                cancelEdit();
+            }
+
+            const cell = document.getElementById(`cell-${field}-${productId}`);
+            if (!cell) return;
+
+            editingField = { productId, field };
+
+            let inputHtml = '';
+            if (field === 'name') {
+                inputHtml = `<input type="text" class="editable-input" id="edit-${field}-${productId}" value="${currentValue.replace(/"/g, '&quot;')}" inputmode="text">`;
+            } else if (field === 'price') {
+                inputHtml = `<input type="number" class="editable-input" id="edit-${field}-${productId}" value="${currentValue}" step="0.01" min="0" inputmode="decimal">`;
+            } else if (field === 'category') {
+                const cats = window.productCategories || [];
+                inputHtml = `<select class="editable-input" id="edit-${field}-${productId}">
+                    <option value="">無分類</option>
+                    ${cats.map(c => `<option value="${c.id}" ${c.id == currentValue ? 'selected' : ''}>${c.name}</option>`).join('')}
+                </select>`;
+            }
+
+            const cellContent = cell.innerHTML;
+            cell.setAttribute('data-original', cellContent);
+            
+            cell.innerHTML = inputHtml + `<div class="inline-edit-btns">
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveEditField(${productId}, '${field}')">確定</button>
+                <button type="button" class="btn btn-sm" style="background: #e5e5e5;" onclick="cancelEdit()">取消</button>
+            </div>`;
+
+            const input = document.getElementById(`edit-${field}-${productId}`);
+            if (input) {
+                setTimeout(() => {
+                    input.focus();
+                }, 100);
+            }
+        }
+
+        async function saveEditField(productId, field) {
+            const input = document.getElementById(`edit-${field}-${productId}`);
+            if (!input) return;
+
+            const newValue = input.value;
+
+            try {
+                const productsData = await apiCall('/products');
+                const product = productsData.find(p => p.id === productId);
+                
+                if (!product) {
+                    showToast('找不到商品', 'error');
+                    return;
+                }
+
+                const updateData = {
+                    name: product.name,
+                    description: product.description,
+                    price: product.price,
+                    category_id: product.category_id,
+                    is_featured: product.is_featured,
+                    is_active: product.is_active,
+                    display_order: product.display_order
+                };
+
+                if (field === 'name') {
+                    updateData.name = newValue;
+                } else if (field === 'price') {
+                    updateData.price = parseFloat(newValue) || 0;
+                } else if (field === 'category') {
+                    updateData.category_id = newValue ? parseInt(newValue) : null;
+                }
+
+                await apiCall(`/products/${productId}`, 'PUT', updateData);
+                showToast('已更新');
+                
+                const newProductsData = await apiCall('/products');
+                renderProducts(newProductsData);
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+
+            editingField = null;
+        }
+
+        function cancelEdit() {
+            if (!editingField) return;
+            
+            const { productId, field } = editingField;
+            const cell = document.getElementById(`cell-${field}-${productId}`);
+            if (cell) {
+                const original = cell.getAttribute('data-original');
+                if (original) {
+                    cell.innerHTML = original;
+                }
+            }
+            editingField = null;
+        }
+
+        async function openProductModal(id = null) {
+            uploadedImages = [];
+            document.getElementById('imagePreview').innerHTML = '';
+            
+            try {
+                categories = await apiCall('/categories');
+                const categorySelect = document.getElementById('productCategory');
+                categorySelect.innerHTML = '<option value="">無分類</option>' + 
+                    categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            } catch (error) {
+                console.error('載入分類失敗:', error);
+            }
+
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('productModalTitle').textContent = '新增商品';
+            document.getElementById('productActive').checked = true;
+
+            if (id) {
+                const products = await apiCall('/products');
+                const product = products.find(p => p.id === id);
+                
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productModalTitle').textContent = '編輯商品';
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productCategory').value = product.category_id || '';
+                document.getElementById('productOrder').value = product.display_order;
+                document.getElementById('productFeatured').checked = product.is_featured === 1;
+                document.getElementById('productActive').checked = product.is_active === 1;
+
+                if (product.images && product.images.length > 0) {
+                    uploadedImages = product.images.map(img => img.image_path);
+                    renderImagePreview();
+                }
+            }
+            
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        async function handleImageUpload(input) {
+            const files = Array.from(input.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                try {
+                    const data = await apiCall('/upload', 'POST', formData);
+                    uploadedImages.push(data.imagePath);
+                } catch (error) {
+                    showToast('圖片上傳失敗', 'error');
+                }
+            }
+
+            renderImagePreview();
+            input.value = '';
+        }
+
+        function renderImagePreview() {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = uploadedImages.map((path, index) => `
+                <div class="image-preview-item">
+                    <img src="${path}" alt="">
+                    <button type="button" class="remove-btn" onclick="removeImage(${index})">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImagePreview();
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('productId').value;
+            const data = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value,
+                price: parseFloat(document.getElementById('productPrice').value) || 0,
+                category_id: document.getElementById('productCategory').value || null,
+                display_order: parseInt(document.getElementById('productOrder').value) || 0,
+                is_featured: document.getElementById('productFeatured').checked ? 1 : 0,
+                is_active: document.getElementById('productActive').checked ? 1 : 0,
+                image_paths: uploadedImages
+            };
+
+            try {
+                if (id) {
+                    await apiCall(`/products/${id}`, 'PUT', data);
+                    showToast('商品已更新');
+                } else {
+                    await apiCall('/products', 'POST', data);
+                    showToast('商品已新增');
+                }
+                closeProductModal();
+                loadProducts();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+
+        async function editProduct(id) {
+            await openProductModal(id);
+        }
+
+        async function toggleProductStatus(id, isActive) {
+            try {
+                const productsData = await apiCall('/products');
+                const product = productsData.find(p => p.id === id);
+                
+                if (!product) {
+                    showToast('找不到商品', 'error');
+                    return;
+                }
+                
+                const result = await apiCall(`/products/${id}`, 'PUT', {
+                    name: product.name,
+                    description: product.description,
+                    price: product.price,
+                    category_id: product.category_id,
+                    is_featured: product.is_featured,
+                    is_active: isActive ? 1 : 0,
+                    display_order: product.display_order
+                });
+                
+                showToast(isActive ? '商品已上架' : '商品已下架');
+                
+                const newProductsData = await apiCall('/products');
+                renderProducts(newProductsData);
+            } catch (error) {
+                console.error('切換狀態失敗:', error);
+                showToast(error.message, 'error');
+                const productsData = await apiCall('/products');
+                renderProducts(productsData);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('確定要刪除此商品嗎？')) return;
+            
+            try {
+                await apiCall(`/products/${id}`, 'DELETE');
+                showToast('商品已刪除');
+                loadProducts();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>
