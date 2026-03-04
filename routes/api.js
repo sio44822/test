@@ -26,8 +26,8 @@ router.get('/products', async (req, res) => {
         }
 
         if (category) {
-            sql += ' AND p.id IN (SELECT product_id FROM product_categories WHERE category_id = ?)';
-            params.push(category);
+            sql += ' AND (p.category_id = ? OR p.id IN (SELECT product_id FROM product_categories WHERE category_id = ?))';
+            params.push(category, category);
         }
 
         if (price_min) {
